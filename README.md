@@ -58,15 +58,17 @@ StringContains<"Hello", "lo"> // true
 
 ## Unions
 ```ts
+UnionPrettify<"Hello" | "World" | "Foo" | "Baz"> // "Hello" | "World" | "Foo" | "Baz"
+
 IsUnion<"Hello" | "World" | "Foo" | "Baz"> // true
 
 UnionToArray<"Hello" | "World" | "Foo" | "Baz"> // ["Hello", "World", "Foo", "Baz"]
-
-UnionPrettify<"Hello" | "World" | "Foo" | "Baz"> // "Hello" | "World" | "Foo" | "Baz"
 ```
 
 ## Arrays
 ```ts
+ArrayPrettify<[ "Hello", "World" ]> // ["Hello", "World"]
+
 ArrayToUnion<["Hello", "World", "Foo", "Baz"]> // "Hello" | "World" | "Foo" | "Baz"
 
 ArrayConcat<
@@ -171,4 +173,13 @@ ISOTimeZoneOffset
 ISODate
 ISOTime
 ISODateTime
+```
+
+# Prettify
+```ts
+// Automatically prettifies Objects, Unions and Arrays.
+
+Prettify<{ hello: "world" }>
+Prettify<"Hello" | "World">
+Prettify<[ "Hello", "World" ]>
 ```

@@ -133,6 +133,8 @@ export type ArrayRemoveLastItem<Arr extends any[]> = Arr extends [ ...infer Item
 export type ArrayLastItem<Arr extends any[]> = Arr extends [ ...any, infer Last ] ? Last : never;
 
 export type ArrayNonEmpty<ElementType extends any> = [ElementType, ...ElementType[]]
+
+export type ArrayPrettify<Arr extends any[]> = ArrayToUnion<UnionToArray<Arr>>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
