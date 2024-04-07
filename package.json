@@ -1,6 +1,6 @@
 {
   "name": "typeforge",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "Useful utility types for typescript",
   "_main": "./dist/index.js",
   "_types": "./dist/index.d.ts",
