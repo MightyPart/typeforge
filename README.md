@@ -130,8 +130,6 @@ ObjectSameKeys<
   { hello: "world", baz: "foo" }
 > // { hello: "world"; }
 
-ObjectShallowPrettify<{ hello: "world" } & { foo: "bar" }> // { hello: "world", foo: "bar" }
-
 ObjectDeepMerge<
   { Bob: { Age: 41 }, Dave: { Age: 32, EyeColor: "Green" } },
   { Bob: { EyeColor: "Blue" }, Dave: { EyeColor: "Brown" } }

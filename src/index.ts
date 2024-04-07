@@ -177,6 +177,21 @@ export type ObjectOverwrite<
   )
 } & _DifferentKeys>
 
+export type ObjectDeepMerge<T, U> = (
+  T extends object
+  ? U extends object
+    ? {
+        [K in Extract<keyof T, string> | Extract<keyof U, string>]: K extends keyof T
+          ? K extends keyof U
+            ? ObjectDeepMerge<T[K], U[K]>
+            : T[K]
+          : K extends keyof U
+          ? U[K]
+          : never;
+      }
+    : never
+  : U
+);
 
 export type ObjectShallowOverwrite<
   Obj1 extends Record<any, any>, Obj2 extends Record<any, any>,
