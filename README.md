@@ -97,7 +97,7 @@ ArrayNonEmpty<string> // [string, ...string[]]
 
 ## Object
 ```ts
-ObjectPrettify<
+ObjectPrettifyDeep<
   { hello: "world" } & { foo: "bar" }
   & { baz: { hello: "world" } & { foo: "bar" } }
 > /* {
@@ -109,7 +109,7 @@ ObjectPrettify<
   };
 } */
 
-ObjectShallowPrettify<
+ObjectPrettify<
   { hello: "world" } & { foo: "bar" }
   & { baz: { hello: "world" } & { foo: "bar" } }
 > /* {
@@ -182,4 +182,8 @@ ISODateTime
 Prettify<{ hello: "world" }>
 Prettify<"Hello" | "World">
 Prettify<[ "Hello", "World" ]>
+
+PrettifyDeep<{ hello: "world" }>
+PrettifyDeep<"Hello" | "World">
+PrettifyDeep<[ "Hello", "World" ]>
 ```

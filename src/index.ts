@@ -139,18 +139,18 @@ export type ArrayPrettify<Arr extends any[]> = ArrayToUnion<UnionToArray<Arr>>
 
 
 // [ OBJECT ] //////////////////////////////////////////////////////////////////////////////////////////////////////////
-export type ObjectShallowPrettify<Obj extends  Record<any, any>> = {
+export type ObjectPrettify<Obj extends  Record<any, any>> = {
   [Key in keyof Obj]: Obj[Key];
 } & {};
 
-export type ObjectPrettify<Obj extends Record<any, any>> = {
-  [Key in keyof Obj]: Obj[Key] extends Record<any, any> ? ObjectPrettify<Obj[Key]> : Obj[Key];
+export type ObjectPrettifyDeep<Obj extends Record<any, any>> = {
+  [Key in keyof Obj]: Obj[Key] extends Date ? Obj[Key] : Obj[Key] extends Record<any, any> ? ObjectPrettifyDeep<Obj[Key]> : Obj[Key];
 } & {};
 
 export type ObjectDifferentKeys<
   Obj1 extends Record<any, any>,
   Obj2 extends Record<any, any>,
-> = ObjectPrettify<Omit<Obj1, keyof Obj2> & Omit<Obj2, keyof Obj1>>
+> = ObjectPrettifyDeep<Omit<Obj1, keyof Obj2> & Omit<Obj2, keyof Obj1>>
 
 export type ObjectSameKeys<
   Obj1 extends Record<any, any>,
@@ -171,7 +171,7 @@ export type ObjectOverwrite<
 
   _SameKeys = ObjectSameKeys<Obj1, Obj2>,
   _DifferentKeys = ObjectDifferentKeys<Obj1, Obj2>
-> = ObjectShallowPrettify<{
+> = ObjectPrettify<{
   [Key in keyof _SameKeys]: (
     Obj2[Key] extends Record<any, any> ? Obj1[Key] extends Record<any, any>
     ? ObjectOverwrite<Obj1[Key], Obj2[Key]>
@@ -200,7 +200,7 @@ export type ObjectShallowOverwrite<
 
   _SameKeys = ObjectSameKeys<Obj1, Obj2>,
   _DifferentKeys = ObjectDifferentKeys<Obj1, Obj2>
-> = ObjectShallowPrettify<{
+> = ObjectPrettify<{
   [Key in keyof _SameKeys]: Obj2[Key]
 } & _DifferentKeys>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -228,5 +228,12 @@ export type Prettify<Input, _ExtendsDate extends boolean = Input extends Date ? 
   _ExtendsDate extends true ? Input :
   IsUnion<Input> extends true ?  UnionPrettify<Input>
   : Input extends Record<any, any> ? ObjectPrettify<Input>
+  : Input
+)
+
+export type PrettifyDeep<Input, _ExtendsDate extends boolean = Input extends Date ? true : false> = (
+  _ExtendsDate extends true ? Input :
+  IsUnion<Input> extends true ?  UnionPrettify<Input>
+  : Input extends Record<any, any> ? ObjectPrettifyDeep<Input>
   : Input
 )
