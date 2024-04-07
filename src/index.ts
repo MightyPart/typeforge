@@ -223,3 +223,10 @@ export type ISOTime = `${ISOHours}:${ISOMinutes}:${ISOSeconds}${ISOMilliseconds 
 
 export type ISODateTime = `${ISODate}T${ISOTime}${ISOTimeZoneOffset}`;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export type Prettify<Input, _ExtendsDate extends boolean = Input extends Date ? true : false> = (
+  _ExtendsDate extends true ? Input :
+  IsUnion<Input> extends true ?  UnionPrettify<Input>
+  : Input extends Record<any, any> ? ObjectPrettify<Input>
+  : Input
+)
