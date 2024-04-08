@@ -219,9 +219,9 @@ export type ISOTimeZoneOffset = `+${number}${number}${number}${number}`;
 
 export type ISODate = `${ISOYear}-${ISOMonth}-${ISODay}`;
 
-export type ISOTime = `${ISOHours}:${ISOMinutes}:${ISOSeconds}${ISOMilliseconds | ""}`;
+export type ISOTime = `${ISOHours}:${ISOMinutes}:${ISOSeconds}${ISOMilliseconds | ""}${"Z" | ""}`;
 
-export type ISODateTime = `${ISODate}T${ISOTime}${ISOTimeZoneOffset}`;
+export type ISODateTime = `${ISODate}T${ISOTime}${ISOTimeZoneOffset | ""}`;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export type Prettify<Input, _ExtendsDate extends boolean = Input extends Date ? true : false> = (
