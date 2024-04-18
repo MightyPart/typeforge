@@ -80,6 +80,23 @@ export type StringIsLiteral<T> = T extends `${infer U}` ? string extends U ? fal
 export type StringContains<T extends string, C extends string> = (
   T extends `${infer _Start}${C}${infer _End}` ? true : false
 )
+
+export type StringIsIso<Str> = (
+  Str extends string ?
+  Str extends ISODateTime ? true
+  : Str extends ISOTime ? true
+  : Str extends ISODate ? true
+  : Str extends ISOYear ? true
+  : Str extends ISOMonth ? true
+  : Str extends ISODay ? true
+  : Str extends ISOHours ? true
+  : Str extends ISOMinutes ? true
+  : Str extends ISOSeconds ? true
+  : Str extends ISOMilliseconds ? true
+  : Str extends ISOTimeZoneOffset ? true
+  : false
+  : false
+)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -95,6 +112,10 @@ export type UnionToArray<T, A extends unknown[] = []> = IsUnion<T> extends true
   : [T, ...A]
 
 export type UnionPrettify<T> = ArrayToUnion<UnionToArray<T>>
+
+export type UnionCollapse<Union, _UnionArr = UnionToArray<Union>> = _UnionArr
+
+type Test = UnionCollapse<(() => void) | (() => void)>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -226,7 +247,8 @@ export type ISODateTime = `${ISODate}T${ISOTime}${ISOTimeZoneOffset | ""}`;
 
 export type Prettify<Input, _ExtendsDate extends boolean = Input extends Date ? true : false> = (
   _ExtendsDate extends true ? Input :
-  IsUnion<Input> extends true ?  UnionPrettify<Input>
+  IsUnion<Input> extends true ? UnionPrettify<Input>
+  : Input extends any[] ? ArrayPrettify<Input> 
   : Input extends Record<any, any> ? ObjectPrettify<Input>
   : Input
 )
@@ -237,3 +259,4 @@ export type PrettifyDeep<Input, _ExtendsDate extends boolean = Input extends Dat
   : Input extends Record<any, any> ? ObjectPrettifyDeep<Input>
   : Input
 )
+
