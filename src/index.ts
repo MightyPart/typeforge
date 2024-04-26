@@ -248,7 +248,7 @@ export type ISODateTime = `${ISODate}T${ISOTime}${ISOTimeZoneOffset | ""}`;
 export type Prettify<Input, _ExtendsDate extends boolean = Input extends Date ? true : false> = (
   _ExtendsDate extends true ? Input :
   IsUnion<Input> extends true ? UnionPrettify<Input>
-  : Input extends any[] ? ArrayPrettify<Input> 
+  //: Input extends any[] ? ArrayPrettify<Input> 
   : Input extends Record<any, any> ? ObjectPrettify<Input>
   : Input
 )
@@ -260,3 +260,8 @@ export type PrettifyDeep<Input, _ExtendsDate extends boolean = Input extends Dat
   : Input
 )
 
+export type Url = `http${"s" | ""}://${string}`
+export type UrlSecure = `https://${string}`
+export type UrlInsecure = `http://${string}`
+
+export type Identifier = number | `${number}`
