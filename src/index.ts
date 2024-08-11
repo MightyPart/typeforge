@@ -114,26 +114,26 @@ export type UnionToArray<T, A extends unknown[] = []> = IsUnion<T> extends true
 export type UnionPrettify<T> = ArrayToUnion<UnionToArray<T>>
 
 export type UnionCollapse<Union, _UnionArr = UnionToArray<Union>> = _UnionArr
-
-type Test = UnionCollapse<(() => void) | (() => void)>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 // [ ARRAY ] ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-export type ArrayToUnion<T extends any[]> = T[number]
+type ArrayAny<T = any> = T[] | readonly T[]
+
+export type ArrayToUnion<T extends ArrayAny> = T[number]
 
 export type ArrayConcat<
-  T extends string[], Delimiter extends string
+  T extends ArrayAny<string>, Delimiter extends string
 > = (
   T extends []
   ? ''
-  : T extends [infer F extends string | number | bigint | boolean | null | undefined, ...infer R extends string[]]
+  : T extends [infer F extends string | number | bigint | boolean | null | undefined, ...infer R extends ArrayAny<string>]
   // @ts-ignore
   ? `${F}${Eq<T["length"], 1> extends 0 ? Delimiter : ""}${ArrayConcat<R, Delimiter>}`
   : never
 );
 
-export type ArrayRemoveTypes<T extends any[], ToKeep extends any> = (
+export type ArrayRemoveTypes<T extends ArrayAny, ToKeep extends any> = (
   T extends [infer Head, ...infer Tail]
   ? Head extends ToKeep 
     ? ArrayRemoveTypes<Tail, ToKeep>
@@ -141,7 +141,7 @@ export type ArrayRemoveTypes<T extends any[], ToKeep extends any> = (
   : []
 );
 
-export type ArrayKeepTypes<T extends any[], ToFilter extends any> = (
+export type ArrayKeepTypes<T extends ArrayAny, ToFilter extends any> = (
   T extends [infer Head, ...infer Tail]
   ? Head extends ToFilter 
     ? [Head, ...ArrayKeepTypes<Tail, ToFilter>]
@@ -149,18 +149,16 @@ export type ArrayKeepTypes<T extends any[], ToFilter extends any> = (
   : []
 );
 
-export type ArrayRemoveLastItem<Arr extends any[]> = Arr extends [ ...infer Items, any ] ? Items : never;
+export type ArrayRemoveLastItem<Arr extends ArrayAny> = Arr extends [ ...infer Items, any ] ? Items : never;
 
-export type ArrayLastItem<Arr extends any[]> = Arr extends [ ...any, infer Last ] ? Last : never;
+export type ArrayLastItem<Arr extends ArrayAny> = Arr extends [ ...any, infer Last ] ? Last : never;
 
-export type ArrayNonEmpty<ElementType extends any> = [ElementType, ...ElementType[]]
-
-export type ArrayPrettify<Arr extends any[]> = ArrayToUnion<UnionToArray<Arr>>
+export type ArrayPrettify<Arr extends ArrayAny> = ArrayToUnion<UnionToArray<Arr>>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 // [ OBJECT ] //////////////////////////////////////////////////////////////////////////////////////////////////////////
-export type ObjectPrettify<Obj extends  Record<any, any>> = {
+export type ObjectPrettify<Obj extends Record<any, any>> = {
   [Key in keyof Obj]: Obj[Key];
 } & {};
 
@@ -224,6 +222,23 @@ export type ObjectShallowOverwrite<
 > = ObjectPrettify<{
   [Key in keyof _SameKeys]: Obj2[Key]
 } & _DifferentKeys>
+
+
+export type ObjectEither<ObjA extends Record<any, any>, ObjB extends Record<any, any>> = (
+  // A
+  ObjectPrettify<{
+    [Key in keyof ObjA]: ObjA[Key]
+  } & {
+    [Key in keyof ObjB as Key extends keyof ObjA ? never : Key]?: Falsey
+  }>
+
+  // B
+  | ObjectPrettify<{
+    [Key in keyof ObjB]: ObjB[Key]
+  } & {
+    [Key in keyof ObjA as Key extends keyof ObjB ? never : Key]?: Falsey
+  }>
+)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -265,3 +280,50 @@ export type UrlSecure = `https://${string}`
 export type UrlInsecure = `http://${string}`
 
 export type Identifier = number | `${number}`
+
+export type Falsey<IncludesZero extends boolean = true> = IncludesZero extends true ? false | undefined | null | 0 : false | undefined | null
+
+
+export type ObjectNullableToUndefined<Obj extends Record<any, any>> = {
+  [K in keyof Obj]?: Exclude<Obj[K], null>
+};
+
+export type ObjectUndefinedToNullable<Obj extends Record<any, any>> = {
+  [K in keyof Obj]-?: undefined extends Obj[K] ? Obj[K] | null : Obj[K]
+};
+
+
+export type ArrayNonEmpty<ElementType extends any> = [ElementType, ...ElementType[]]
+
+
+export type NumberIsLiteral<Num extends number> = (
+  number extends Num ? false
+  : [Num] extends [never] ? false
+  : [Num] extends [string | number] ? true
+  : false
+)
+
+
+export type StringLowercaseFirstLetter<S extends string> =
+S extends `${infer First}${infer Rest}`
+? `${Lowercase<First>}${Rest}`
+: S;
+
+export type ObjectKeysToCamelCase<Obj extends Record<any, any>> = {
+  [Key in keyof Obj as Key extends string ? StringLowercaseFirstLetter<Key> : Key]: (
+    Obj[Key] extends Array<any> ? Obj[Key]
+    : Obj[Key] extends Date ? Date
+    : Obj[Key] extends Record<any, any> ? ObjectPrettify<ObjectKeysToCamelCase<Obj[Key]>>
+    : Obj[Key]
+  )
+}
+
+export type ArrayWithObjectsToCamelCase<Arr extends Record<any, any>[]> = {
+ [Key in keyof Arr]: ObjectPrettify<ObjectKeysToCamelCase<Arr[Key]>>
+}
+
+
+export type IsLiteral<T extends unknown> =
+  T extends number ? NumberIsLiteral<T>
+  : T extends string ? StringIsLiteral<T>
+  : false
