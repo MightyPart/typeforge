@@ -327,3 +327,5 @@ export type IsLiteral<T extends unknown> =
   T extends number ? NumberIsLiteral<T>
   : T extends string ? StringIsLiteral<T>
   : false
+
+export type ArrayNonEmptyIfConst<T extends any> = IsLiteral<T> extends true ? ArrayNonEmpty<T> : T[]
